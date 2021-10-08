@@ -27,6 +27,8 @@ motor liftMotorRight = motor(PORT19, false);
 motor_group liftMotors = motor_group(liftMotorLeft, liftMotorRight);
 
 int a = 50;
+bool ready = false;
+int autonType = 0;
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -56,11 +58,44 @@ void turnDegrees(double degrees) {
   rightDrive.spinFor(directionType::rev, 360 * (3.14 * 18 / degrees), rotationUnits::deg);
 }
 
+void leftAuton() {
+  turnDegrees(-15);
+  driveInches(22);
+  liftMotors.rotateFor(60 * 15, rotationUnits::deg);
+  driveInches(-22);
+  turnDegrees(15);
+  liftMotors.rotateFor(30 * 15, rotationUnits::deg);
+  driveInches(22);
+  liftMotors.rotateFor(-5 * 15, rotationUnits::deg);
+  driveInches(24);
+}
+
+void rightAuton() {
+
+}
+
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   Controller1.ButtonA.pressed(lowPower);
   Controller1.ButtonB.pressed(highPower);
+
+  Brain.Screen.drawCircle(120, 136, 120);
+  Brain.Screen.drawCircle(360, 136, 120);
+
+  while (autonType != 0) {
+    
+    int touchX = Brain.Screen.xPosition();
+    int touchY = Brain.Screen.yPosition();
+
+    if (((touchX - 120)^2 + (touchY - 136)^2) <= (120 ^ 2)) {
+      autonType = 1;
+    }
+
+    if (((touchX - 360)^2 + (touchY - 136)^2) <= (120 ^ 2)) {
+      autonType = 2;
+    }
+  }
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -79,12 +114,12 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  liftMotors.spinFor(3, timeUnits::sec);
-  turnDegrees(-15);
-  driveInches(13);
-  liftMotors.spinFor(1, timeUnits::sec);
-  driveInches(-13);
-  turnDegrees(15);
+  if (autonType == 1) {
+    leftAuton();
+  }
+  if (autonType == 2) {
+    rightAuton();
+  }
 }
 
 /*---------------------------------------------------------------------------*/
