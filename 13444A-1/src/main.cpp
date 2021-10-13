@@ -71,7 +71,17 @@ void leftAuton() {
 }
 
 void rightAuton() {
-
+  driveInches(12);
+  turnDegrees(45);
+  driveInches(9);
+  liftMotors.rotateFor(60 * 15, rotationUnits::deg);
+  driveInches(-9);
+  liftMotors.rotateFor(30 * 15, rotationUnits::deg);
+  turnDegrees(20);
+  driveInches(12);
+  liftMotors.rotateFor(-15 * 15, rotationUnits::deg);
+  driveInches(-6);
+  
 }
 
 void pre_auton(void) {
