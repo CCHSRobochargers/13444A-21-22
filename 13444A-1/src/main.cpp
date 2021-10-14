@@ -81,7 +81,10 @@ void rightAuton() {
   driveInches(12);
   liftMotors.rotateFor(-15 * 15, rotationUnits::deg);
   driveInches(-6);
-  
+  turnDegrees(-65);
+  driveInches(-4);
+  liftMotors.rotateFor(1 * 15, rotationUnits::deg);
+  driveInches(-10);
 }
 
 void pre_auton(void) {
@@ -93,18 +96,24 @@ void pre_auton(void) {
   Brain.Screen.drawCircle(120, 136, 120);
   Brain.Screen.drawCircle(360, 136, 120);
 
-  while (autonType != 0) {
+  while (autonType == 0) {
     
     int touchX = Brain.Screen.xPosition();
     int touchY = Brain.Screen.yPosition();
 
     if (((touchX - 120)^2 + (touchY - 136)^2) <= (120 ^ 2)) {
       autonType = 1;
+      Controller1.Screen.print("Left Autonomous");
     }
 
     if (((touchX - 360)^2 + (touchY - 136)^2) <= (120 ^ 2)) {
       autonType = 2;
+      Controller1.Screen.print("Right Autonomous");
     }
+
+  Brain.Screen.clearScreen();
+  Brain.Screen.print("Go!");
+
   }
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
