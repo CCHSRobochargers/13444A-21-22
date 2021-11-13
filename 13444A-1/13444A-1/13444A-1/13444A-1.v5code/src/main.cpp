@@ -53,11 +53,13 @@ void highPower() {
 
 void grab() {
   // grabMotor.spinFor(1, timeUnits::sec, -50, velocityUnits::pct);
-  grabMotor.rotateTo(-45, degrees);
+  grabMotor.rotateTo(-55, degrees);
+  wait(250, msec);
 }
 
 void resetGrab() {
   grabMotor.rotateTo(0, degrees);
+  wait(200, msec);
 }
 
 void driveInches(double inches, int percent) {
@@ -68,8 +70,8 @@ void driveInches(double inches, int percent) {
 }
 
 void turnDegrees(double degrees) {
-  leftMotors.spinFor(directionType::fwd, 360 * (3.14 * 18 / degrees), rotationUnits::deg, false);
-  rightMotors.spinFor(directionType::rev, 360 * (3.14 * 18 / degrees), rotationUnits::deg);
+  leftMotors.spinFor(directionType::fwd, (9 * degrees) / 720, rotationUnits::rev, false);
+  rightMotors.spinFor(directionType::rev, (9 * degrees) / 720, rotationUnits::rev);
 }
 
 int autonType = 0;
@@ -77,6 +79,8 @@ int autonType = 0;
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
+  grabMotor.setRotation(0, rotationUnits::deg);
+  grabMotor.setTimeout(300, timeUnits::msec);
   Controller1.ButtonDown.pressed(lowPower);
   Controller1.ButtonRight.pressed(highPower);
   Controller1.ButtonY.pressed(resetGrab);
@@ -121,29 +125,69 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
   if (autonType == 1) {
+    /*
     driveInches(18, 75);
     liftMotors.spinFor(-40 * 5, rotationUnits::deg);     
     driveInches(-10, 100);
     liftMotors.spinFor(-20 * 5, rotationUnits::deg);
-    turnDegrees(-77);
+    turnDegrees(-72);
     driveInches(48, 100);
     liftMotors.spinFor(25 * 5, rotationUnits::deg);
     driveInches(-40, 100);
     liftMotors.spinFor(-25 * 5, rotationUnits::deg);
+    */
+    liftMotors.spinFor(-60 * 5, rotationUnits::deg, false);
+    driveInches(42, 100);
+    driveInches(12, 75);
+    liftMotors.spinFor(25 * 5, rotationUnits::deg);
+    driveInches(-36, 75);
+    leftMotors.spinFor(directionType::rev, 2.15, rotationUnits::rev);
+    grab();
   }
   if (autonType == 2) {
-    driveInches(30, 75);
-    liftMotors.spinFor(40 * 5, degrees);
-    driveInches(-16, 100);
-    liftMotors.spinFor(20 * 5, degrees);
-    turnDegrees(-45);
-    driveInches(36, 100);
-    liftMotors.spinFor(-5 * 5, degrees);
-    driveInches(-36, 100);
-    liftMotors.spinFor (5 * 5, degrees);
+    liftMotors.spinFor(-60 * 5, rotationUnits::deg, false);
+    driveInches(42, 100);
+    driveInches(12, 75);
+    liftMotors.spinFor(25 * 5, rotationUnits::deg);
+    driveInches(-27, 75);
+    leftMotors.spinFor(directionType::rev, 2.125, rotationUnits::rev);
+    driveInches(-2, 50);
+    resetGrab();
+    grab();
+    //grabMotor.spinFor(-55, rotationUnits::deg);
+    //wait(500, msec);
+    driveInches(16, 100);
   }
   if (autonType == 3) {
-    
+    driveInches(-24, 100);
+    grab();
+    rightMotors.spinFor(directionType::fwd, 0.5, rotationUnits::rev, false);
+    leftMotors.spinFor(directionType::fwd, 5, rotationUnits::rev, false);
+    liftMotors.spinFor(60 * 5, rotationUnits::deg);
+    driveInches(54, 100);
+    resetGrab();
+    driveInches(1, 100);
+    turnDegrees(-90);
+    driveInches(10, 100);
+    driveInches(-8, 100);
+    turnDegrees(-45);
+    driveInches(-6, 100);
+    grab();
+    driveInches(6, 100);
+    turnDegrees(45);
+    driveInches(4, 100);
+    turnDegrees(90);
+    driveInches(50, 100);
+    turnDegrees(-90);
+    driveInches(50, 100);
+    liftMotors.spinFor(-25 * 5, rotationUnits::deg);
+    turnDegrees(90);
+    driveInches(12, 100);
+    turnDegrees(-90);
+    driveInches(12, 100);
+    turnDegrees(-90);
+    liftMotors.spinFor(25 * 5, rotationUnits::deg);
+    driveInches(36, 50);
   }
 }
 
@@ -170,7 +214,7 @@ void usercontrol(void) {
     // ........................................................................
     liftMotors.setStopping(brakeType::hold);
     grabMotor.setStopping(brakeType::hold);
-    grabMotor.setTimeout(1000, timeUnits::msec);
+    grabMotor.setTimeout(300, timeUnits::msec);
     leftMotors.spin(directionType::fwd, Controller1.Axis3.value() * a / 100, velocityUnits::pct);
     rightMotors.spin(directionType::fwd, Controller1.Axis2.value() * a / 100, velocityUnits::pct);
     if (Controller1.ButtonL1.pressing()) {
