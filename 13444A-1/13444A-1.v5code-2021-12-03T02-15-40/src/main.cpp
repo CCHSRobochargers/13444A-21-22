@@ -282,19 +282,7 @@ void autonomous(void) {
     turnDegrees(-90);
     liftMotors.spinFor(-25 * 5, rotationUnits::deg);
     driveInches(16, 50);
-    while(Sensor.pitch() > 20) {
-      leftMotors.spin(directionType::fwd);
-      rightMotors.spin(directionType::fwd);
-    }
-    leftMotors.stop(brakeType::brake);
-    rightMotors.stop(brakeType::brake);
-    while (true) {
-      if (Sensor.pitch() < -5) {
-        driveInches(-1.5, 100);
-        leftMotors.stop(brakeType::brake);
-        rightMotors.stop(brakeType::brake);
-      }
-    }
+    holdBrake();
   }
   if (autonType == 4) {
     liftMotors.spinFor(-60 * 5, rotationUnits::deg, false);
