@@ -42,6 +42,7 @@ inertial Sensor = inertial(PORT8);
 
 int a = 100;
 int b = 1;
+int n = 1;
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -53,21 +54,6 @@ int b = 1;
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
 
-/*
-void lowPower() {
-  a = 50;
-}
-
-void highPower() {
-  a = 100;
-}
-*/
-/*
-void brakeRamp() {
-  leftMotors.setStopping(brake);
-  rightMotors.setStopping(brake);
-}
-*/
 void brakeField() {
   leftMotors.setStopping(brakeType::coast);
   rightMotors.setStopping(brakeType::coast);
@@ -95,8 +81,8 @@ void autoBalance() {
   while(true) {
     if (Sensor.pitch() < -13) {
       while (Sensor.pitch() < -8) {
-        leftMotors.spin(directionType::rev, 10, percentUnits::pct);
-        rightMotors.spin(directionType::rev, 10, percentUnits::pct);
+        leftMotors.spin(directionType::rev, 50/n, percentUnits::pct);
+        rightMotors.spin(directionType::rev, 50/n, percentUnits::pct);
         if (Controller1.ButtonRight.pressing() == true) {
           break;
         }
@@ -104,11 +90,18 @@ void autoBalance() {
     }
     if (Sensor.pitch() > 13) {
       while (Sensor.pitch() > 8) {
-        leftMotors.spin(directionType::fwd, 10, percentUnits::pct);
-        rightMotors.spin(directionType::fwd, 10, percentUnits::pct);
+        leftMotors.spin(directionType::fwd, 50/n, percentUnits::pct);
+        rightMotors.spin(directionType::fwd, 50/n, percentUnits::pct);
         if (Controller1.ButtonRight.pressing() == true) {
           goto leave;
         }
+      }
+    }
+    n = n + 1;
+    if (Sensor.pitch() < 1 && Sensor.pitch() > -1) {
+      wait(0.5, timeUnits::sec);
+      if (Sensor.pitch() < 1 && Sensor.pitch() > -1) {
+        n = 1;
       }
     }
     leave:
@@ -188,7 +181,7 @@ void pre_auton(void) {
   Controller1.ButtonX.pressed(autoBalance);
   Controller1.ButtonRight.pressed(brakeField);
   Controller1.ButtonB.released(resetBrake);
-  Controller1.ButtonDown.pressed(holdBrake);`
+  Controller1.ButtonDown.pressed(holdBrake);
   Controller1.ButtonY.pressed(resetGrab);
   Controller1.ButtonY.released(grab);
   Brain.Screen.drawRectangle(0, 0, 240, 90, red);
