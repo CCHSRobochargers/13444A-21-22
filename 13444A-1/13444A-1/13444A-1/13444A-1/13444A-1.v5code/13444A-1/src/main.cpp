@@ -67,6 +67,7 @@ void grab() {
   //wait(250, msec);
   while(grabMotor.torque() < 1) {
     grabMotor.spin(directionType::rev);
+    wait(20, msec);
   }
   grabMotor.stop();
 }
@@ -106,12 +107,11 @@ void pre_auton(void) {
   vexcodeInit();
   grabMotor.setPosition(0, rotationUnits::deg);
   grabMotor.setRotation(0, rotationUnits::deg);
-  grabMotor.setTimeout(300, timeUnits::msec);
   grabMotor.setStopping(brakeType::hold);
   Controller1.ButtonDown.pressed(lowPower);
   Controller1.ButtonRight.pressed(highPower);
   Controller1.ButtonY.pressed(resetGrab);
-  Controller1.ButtonY.released(grab);
+  Controller1.ButtonB.pressed(grab);
   Brain.Screen.drawRectangle(0, 0, 240, 90, blue);
   Brain.Screen.drawRectangle(240, 0, 240, 90, red);
   Brain.Screen.drawRectangle(0, 180, 480, 60, green);
@@ -255,7 +255,7 @@ void autonomous(void) {
     turnDegrees(180);
     driveInches(-4, 25);
     grab();
-    turnDegrees(45);
+    turnDegrees(-45);
     driveInches(50, 100);
   }
 }
@@ -283,7 +283,6 @@ void usercontrol(void) {
     // ........................................................................
     liftMotors.setStopping(brakeType::hold);
     grabMotor.setStopping(brakeType::hold);
-    grabMotor.setTimeout(300, timeUnits::msec);
     leftMotors.spin(directionType::fwd, Controller1.Axis3.value() * a / 100, velocityUnits::pct);
     rightMotors.spin(directionType::fwd, Controller1.Axis2.value() * a / 100, velocityUnits::pct);
     if (Controller1.ButtonL1.pressing()) {

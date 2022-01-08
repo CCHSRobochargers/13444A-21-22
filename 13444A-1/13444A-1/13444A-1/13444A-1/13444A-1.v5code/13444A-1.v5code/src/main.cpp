@@ -42,6 +42,8 @@ inertial Sensor = inertial(PORT8);
 
 int a = 100;
 int b = 1;
+int n = 1;
+int t = 1;
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -53,21 +55,6 @@ int b = 1;
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
 
-/*
-void lowPower() {
-  a = 50;
-}
-
-void highPower() {
-  a = 100;
-}
-*/
-/*
-void brakeRamp() {
-  leftMotors.setStopping(brake);
-  rightMotors.setStopping(brake);
-}
-*/
 void brakeField() {
   leftMotors.setStopping(brakeType::coast);
   rightMotors.setStopping(brakeType::coast);
@@ -83,10 +70,11 @@ void holdBrake() {
   b = 2;
   Controller1.Screen.clearScreen();
   Controller1.Screen.setCursor(1,1);
-  Controller1.Screen.print("Coast");
+  Controller1.Screen.print("Hold");
 }
 
 void autoBalance() {
+  Controller1.rumble(".");
   leftMotors.setStopping(brakeType::hold);
   rightMotors.setStopping(brakeType::hold);
   Controller1.Screen.clearScreen();
@@ -95,8 +83,8 @@ void autoBalance() {
   while(true) {
     if (Sensor.pitch() < -13) {
       while (Sensor.pitch() < -8) {
-        leftMotors.spin(directionType::rev, 10, percentUnits::pct);
-        rightMotors.spin(directionType::rev, 10, percentUnits::pct);
+        leftMotors.spin(directionType::rev, 50/n, percentUnits::pct);
+        rightMotors.spin(directionType::rev, 50/n, percentUnits::pct);
         if (Controller1.ButtonRight.pressing() == true) {
           break;
         }
@@ -104,11 +92,18 @@ void autoBalance() {
     }
     if (Sensor.pitch() > 13) {
       while (Sensor.pitch() > 8) {
-        leftMotors.spin(directionType::fwd, 10, percentUnits::pct);
-        rightMotors.spin(directionType::fwd, 10, percentUnits::pct);
+        leftMotors.spin(directionType::fwd, 50/n, percentUnits::pct);
+        rightMotors.spin(directionType::fwd, 50/n, percentUnits::pct);
         if (Controller1.ButtonRight.pressing() == true) {
           goto leave;
         }
+      }
+    }
+    n = n + 1;
+    if (Sensor.pitch() < 1 && Sensor.pitch() > -1) {
+      wait(0.5, timeUnits::sec);
+      if (Sensor.pitch() < 1 && Sensor.pitch() > -1) {
+        n = 1;
       }
     }
     leave:
@@ -130,15 +125,17 @@ void grab() {
   // grabMotor.spinFor(1, timeUnits::sec, -50, velocityUnits::pct);
   //grabMotor.rotateTo(-55, degrees);
   //wait(250, msec);
-  while(grabMotor.torque() < 0.75) {
+  while(grabMotor.torque() < 0.5) {
     grabMotor.spin(directionType::rev);
   }
   grabMotor.stop();
+  Controller1.rumble(".");
 }
 
 void resetGrab() {
   grabMotor.rotateTo(0, rotationUnits::deg, false);
   // wait(600, msec);
+  Controller1.rumble(".");
 }
 
 void driveInches(double inches, int percent) {
@@ -151,7 +148,7 @@ void driveInches(double inches, int percent) {
 void turnDegrees(double degrees) {
   leftMotors.setStopping(brakeType::brake);
   rightMotors.setStopping(brakeType::brake);
-  leftMotors.spinFor(directionType::fwd, (9 * degrees) / 720 + 0.125, rotationUnits::rev, false);
+  leftMotors.spinFor(directionType::fwd, (9 * degrees) / 720 - 0.125, rotationUnits::rev, false);
   rightMotors.spinFor(directionType::rev, (9 * degrees) / 720 + 0.125, rotationUnits::rev);
   resetBrake();
   /*
@@ -188,7 +185,7 @@ void pre_auton(void) {
   Controller1.ButtonX.pressed(autoBalance);
   Controller1.ButtonRight.pressed(brakeField);
   Controller1.ButtonB.released(resetBrake);
-  Controller1.ButtonDown.pressed(holdBrake);`
+  Controller1.ButtonDown.pressed(holdBrake);
   Controller1.ButtonY.pressed(resetGrab);
   Controller1.ButtonY.released(grab);
   Brain.Screen.drawRectangle(0, 0, 240, 90, red);
@@ -278,11 +275,11 @@ void autonomous(void) {
     driveInches(4, 50);
     turnDegrees(45);
     driveInches(6, 50);
-    turnDegrees(45);
-    driveInches(14, 50);
+    turnDegrees(50);
+    driveInches(24, 50);
     turnDegrees(90);
     liftMotors.spinFor(-60 * 5, rotationUnits::deg);
-    driveInches(52, 100);
+    driveInches(60, 100);
     liftMotors.spinFor(25 * 5, rotationUnits::deg);
     turnDegrees(90);
     driveInches(6, 50);
@@ -300,9 +297,9 @@ void autonomous(void) {
     wait(2, seconds);
     driveInches(4, 50);
     turnDegrees(70);
-    driveInches(14, 50);
+    driveInches(13, 50);
     turnDegrees(-175);
-    driveInches(-8, 25);
+    driveInches(-9, 25);
     grab();
     turnDegrees(-80);
     driveInches(50, 100);
@@ -366,6 +363,12 @@ void usercontrol(void) {
         leftMotors.setStopping(brakeType::hold);
         rightMotors.setStopping(brakeType::hold);
       }
+    }
+    if (leftDrive.temperature() >= 60 | leftDrive2.temperature() >= 60 | rightDrive.temperature() >= 60 | rightDrive2.temperature() >= 60) {
+      if (t == 0) {
+        Controller1.rumble(".");
+      }
+      t = (t + 1) % 100;
     }
     /* testing inertial sensor
     if (Controller1.ButtonLeft.pressing() && Sensor.angle() <= 86.5) {
